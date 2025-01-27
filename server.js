@@ -13,12 +13,18 @@ connectDB();
 const app = express();
 
 // Dynamically allow the frontend URL or any global access
-const allowedOrigins = ['http://localhost:3000', 'http://192.168.0.106:3000', 'https://your-frontend.vercel.app'];
+const allowedOrigins = [
+    'http://localhost:3000', // Local development
+    'http://192.168.0.106:3000', // Local network testing
+    'https://realtime-chat-frontend-ten.vercel.app', // Deployed frontend on Vercel
+];
+
 app.use(cors({
     origin: (origin, callback) => {
         if (!origin || allowedOrigins.includes(origin)) {
             callback(null, true);
         } else {
+            console.error(`Blocked by CORS: ${origin}`);
             callback(new Error('Not allowed by CORS'));
         }
     },
@@ -86,4 +92,4 @@ io.on('connection', (socket) => {
 
 // Bind the server to a globally accessible address
 const PORT = process.env.PORT || 5000;
-server.listen(PORT, '0.0.0.0', () => console.log(`Server running on port ${PORT}`));
+server.listen(PORT, '0.0.0.0', () => console.log(`Server running on http://0.0.0.0:${PORT}`));
