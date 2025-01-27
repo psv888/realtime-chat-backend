@@ -60,6 +60,11 @@ io.on('connection', (socket) => {
             });
     });
 
+    app.get('/', (req, res) => {
+        res.send('Backend is running successfully!');
+    });
+    
+
     // Handle incoming messages
     socket.on('privateMessage', async ({ sender, receiver, text }) => {
         const message = new Message({ sender, receiver, text });
