@@ -27,10 +27,18 @@ app.use(cors({
 
 app.use(express.json());
 
+// API Routes
 app.use('/api/users', userRoutes);
 
+// Root Route for Testing
+app.get('/', (req, res) => {
+    res.send('Backend is running successfully!');
+});
+
+// Create Server
 const server = http.createServer(app);
 
+// Set up Socket.IO with CORS configuration
 const io = new Server(server, {
     cors: {
         origin: allowedOrigins,
@@ -38,6 +46,7 @@ const io = new Server(server, {
     },
 });
 
+// Socket.IO Connection
 io.on('connection', (socket) => {
     console.log('User connected:', socket.id);
 
@@ -60,11 +69,6 @@ io.on('connection', (socket) => {
             });
     });
 
-    app.get('/', (req, res) => {
-        res.send('Backend is running successfully!');
-    });
-    
-
     // Handle incoming messages
     socket.on('privateMessage', async ({ sender, receiver, text }) => {
         const message = new Message({ sender, receiver, text });
@@ -74,11 +78,12 @@ io.on('connection', (socket) => {
         io.to(room).emit('privateMessage', message);
     });
 
+    // Handle user disconnection
     socket.on('disconnect', () => {
         console.log('User disconnected:', socket.id);
     });
 });
 
-// Updated: Bind the server to 0.0.0.0 for global access
+// Bind the server to a globally accessible address
 const PORT = process.env.PORT || 5000;
-server.listen(PORT, '0.0.0.0', () => console.log(`Server running on http://0.0.0.0:${PORT}`));
+server.listen(PORT, '0.0.0.0', () => console.log(`Server running on port ${PORT}`));
